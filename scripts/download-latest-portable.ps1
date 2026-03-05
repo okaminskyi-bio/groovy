@@ -27,7 +27,11 @@ try {
 
 if (-not $release) {
     $listApi = "https://api.github.com/repos/$Owner/$Repo/releases?per_page=30"
-    $releases = Invoke-RestMethod -Uri $listApi -Headers $headers
+    try {
+        $releases = Invoke-RestMethod -Uri $listApi -Headers $headers
+    } catch {
+        throw "Cannot list releases for $Owner/$Repo without login. Make the repo public and ensure at least one release exists."
+    }
     $release = $releases |
         Where-Object { $_.assets -and ($_.assets.name -contains $assetName) } |
         Sort-Object { [datetime]$_.published_at } -Descending |

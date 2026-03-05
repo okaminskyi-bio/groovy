@@ -89,3 +89,4 @@ The workflow `.github/workflows/oleh-groovy-editor-portable.yml` will:
 ```
 
 The script supports stable and beta releases and verifies that both `oleh-groovy-editor.exe` and `OlehGroovyEditor.bat` exist after unzip.
+For no-login downloads, the GitHub repository must be public.
