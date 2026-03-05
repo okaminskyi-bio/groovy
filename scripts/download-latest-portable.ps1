@@ -7,21 +7,46 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+$ProgressPreference = "SilentlyContinue"
+$headers = @{
+    "User-Agent" = "OlehGroovyEditorDownloader"
+    "Accept" = "application/vnd.github+json"
+}
+$assetName = "OlehGroovyEditor-windows-portable.zip"
 
 New-Item -ItemType Directory -Path $OutDir -Force | Out-Null
 
-$api = "https://api.github.com/repos/$Owner/$Repo/releases/latest"
-Write-Host "Fetching latest release from $api"
-$release = Invoke-RestMethod -Uri $api -Headers @{ "User-Agent" = "OlehGroovyEditorDownloader" }
-
-$asset = $release.assets | Where-Object { $_.name -eq "OlehGroovyEditor-windows-portable.zip" } | Select-Object -First 1
-if (-not $asset) {
-    throw "Asset OlehGroovyEditor-windows-portable.zip not found in latest release."
+$release = $null
+$latestApi = "https://api.github.com/repos/$Owner/$Repo/releases/latest"
+Write-Host "Fetching latest stable release from $latestApi"
+try {
+    $release = Invoke-RestMethod -Uri $latestApi -Headers $headers
+} catch {
+    Write-Host "Latest stable release not found. Falling back to full release list (includes beta)."
 }
 
+if (-not $release) {
+    $listApi = "https://api.github.com/repos/$Owner/$Repo/releases?per_page=30"
+    $releases = Invoke-RestMethod -Uri $listApi -Headers $headers
+    $release = $releases |
+        Where-Object { $_.assets -and ($_.assets.name -contains $assetName) } |
+        Sort-Object { [datetime]$_.published_at } -Descending |
+        Select-Object -First 1
+}
+
+if (-not $release) {
+    throw "No release with asset $assetName found for $Owner/$Repo."
+}
+
+$asset = $release.assets | Where-Object { $_.name -eq $assetName } | Select-Object -First 1
+if (-not $asset) {
+    throw "Asset $assetName not found in release $($release.tag_name)."
+}
+
+Write-Host "Using release: $($release.tag_name)"
 $zipPath = Join-Path $OutDir $asset.name
 Write-Host "Downloading $($asset.browser_download_url)"
-Invoke-WebRequest -Uri $asset.browser_download_url -OutFile $zipPath -Headers @{ "User-Agent" = "OlehGroovyEditorDownloader" }
+Invoke-WebRequest -Uri $asset.browser_download_url -OutFile $zipPath -Headers $headers
 
 $extractDir = Join-Path $OutDir "OlehGroovyEditor"
 if (Test-Path $extractDir) {
@@ -29,5 +54,15 @@ if (Test-Path $extractDir) {
 }
 Expand-Archive -Path $zipPath -DestinationPath $extractDir -Force
 
+$exePath = Join-Path $extractDir "oleh-groovy-editor.exe"
+$batPath = Join-Path $extractDir "OlehGroovyEditor.bat"
+if (-not (Test-Path $exePath)) {
+    throw "Downloaded zip is missing oleh-groovy-editor.exe"
+}
+if (-not (Test-Path $batPath)) {
+    throw "Downloaded zip is missing OlehGroovyEditor.bat"
+}
+
 Write-Host "Downloaded: $zipPath"
 Write-Host "Extracted to: $extractDir"
+Write-Host "Run: $batPath"

@@ -49,6 +49,19 @@ jobs:
           if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
           Compress-Archive -Path "$appDir/*" -DestinationPath $zipPath -Force
 
+      - name: Verify package content
+        shell: pwsh
+        run: |
+          $zipPath = "dist/OlehGroovyEditor-windows-portable.zip"
+          $checkDir = "dist/_verify"
+          if (Test-Path $checkDir) { Remove-Item $checkDir -Recurse -Force }
+          Expand-Archive -Path $zipPath -DestinationPath $checkDir -Force
+
+          $exe = Join-Path $checkDir "oleh-groovy-editor.exe"
+          $bat = Join-Path $checkDir "OlehGroovyEditor.bat"
+          if (-not (Test-Path $exe)) { throw "Release zip is missing oleh-groovy-editor.exe" }
+          if (-not (Test-Path $bat)) { throw "Release zip is missing OlehGroovyEditor.bat" }
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -61,3 +74,4 @@ jobs:
         with:
           files: dist/OlehGroovyEditor-windows-portable.zip
           generate_release_notes: true
+          prerelease: ${{ contains(github.ref_name, 'beta') || contains(github.ref_name, 'alpha') || contains(github.ref_name, 'rc') }}

@@ -62,6 +62,7 @@ cargo build --release
 ## Portable Launcher
 
 Use `portable/OlehGroovyEditor.bat` together with `oleh-groovy-editor.exe` in the same folder.
+For end users: download the release asset `OlehGroovyEditor-windows-portable.zip` (not the GitHub source code zip), unzip, then run `OlehGroovyEditor.bat`.
 
 ## Collaboration Setup
 
@@ -86,3 +87,5 @@ The workflow `.github/workflows/oleh-groovy-editor-portable.yml` will:
 ```powershell
 .\scripts\download-latest-portable.ps1 -Owner <owner> -Repo <repo>
 ```
+
+The script supports stable and beta releases and verifies that both `oleh-groovy-editor.exe` and `OlehGroovyEditor.bat` exist after unzip.
