@@ -1,2 +1,5 @@
 /target
 /dist
+/download
+/data
+job_*.log

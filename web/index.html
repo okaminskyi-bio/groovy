@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Oleh Groovy Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="bg-orb orb-a"></div>
+  <div class="bg-orb orb-b"></div>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-head">
+        <div>
+          <div class="label">Workspace</div>
+          <div class="value" id="workspacePath">Loading...</div>
+        </div>
+        <button class="btn ghost" id="refreshTreeBtn">Refresh</button>
+      </div>
+      <div class="tree-wrap" id="treeRoot"></div>
+    </aside>
+
+    <main class="main-area">
+      <header class="toolbar">
+        <div class="toolbar-left">
+          <div class="title">Oleh Groovy Studio</div>
+          <div class="subtitle">DOCX + Groovy timeline editor</div>
+        </div>
+        <div class="toolbar-right">
+          <button class="btn" id="modeBtn">Mode: Groovy</button>
+          <button class="btn" id="snapshotBtn">Snapshot</button>
+          <button class="btn primary" id="saveBtn">Save</button>
+        </div>
+      </header>
+
+      <section class="session-row">
+        <div class="session-pill">
+          <span class="dot"></span>
+          <span id="activePath">No file opened</span>
+        </div>
+        <div class="session-pill muted">
+          <span id="statusText">Ready.</span>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <div class="editor-column">
+          <div id="editor"></div>
+        </div>
+        <aside class="timeline-column">
+          <div class="timeline-head">
+            <div>
+              <div class="label">Timeline</div>
+              <div class="value">Session history</div>
+            </div>
+            <button class="btn ghost" id="reloadTimelineBtn">Reload</button>
+          </div>
+          <div class="timeline-list" id="timelineList"></div>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/loader.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>
