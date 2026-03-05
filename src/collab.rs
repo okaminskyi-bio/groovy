@@ -232,7 +232,9 @@ pub fn start_client(url: &str) -> Result<WsHandle, String> {
             match connect(url_str.as_str()) {
                 Ok((mut ws, _)) => {
                     let _ = incoming_tx.send(format!("Connected to {url_str}"));
-                    let _ = ws.get_mut().set_nonblocking(true);
+                    if let tungstenite::stream::MaybeTlsStream::Plain(stream) = ws.get_mut() {
+                        let _ = stream.set_nonblocking(true);
+                    }
                     loop {
                         if stop_rx.try_recv().is_ok() {
                             return;
