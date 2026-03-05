@@ -1,4 +1,4 @@
-use similar::{DiffTag, TextDiff};
+use similar::{ChangeTag, DiffTag, TextDiff};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum DiffKind {
@@ -46,6 +46,28 @@ pub fn side_by_side_diff(left: &str, right: &str) -> Vec<DiffLine> {
                         left: None,
                         right: Some(trim_trailing_newline(change.to_string())),
                         kind: DiffKind::Added,
+                    });
+                }
+            }
+            DiffTag::Replace => {
+                let mut removes = Vec::new();
+                let mut adds = Vec::new();
+                for change in diff.iter_changes(op) {
+                    match change.tag() {
+                        ChangeTag::Delete => {
+                            removes.push(trim_trailing_newline(change.to_string()))
+                        }
+                        ChangeTag::Insert => adds.push(trim_trailing_newline(change.to_string())),
+                        ChangeTag::Equal => {}
+                    }
+                }
+
+                let max_len = removes.len().max(adds.len());
+                for idx in 0..max_len {
+                    out.push(DiffLine {
+                        left: removes.get(idx).cloned(),
+                        right: adds.get(idx).cloned(),
+                        kind: DiffKind::Replaced,
                     });
                 }
             }
