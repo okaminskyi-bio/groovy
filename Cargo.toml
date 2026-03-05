@@ -1,0 +1,20 @@
+[package]
+name = "oleh-groovy-editor"
+version = "0.1.0"
+edition = "2024"
+description = "Portable Groovy template editor for diaLIMS report templates"
+license = "MIT"
+
+[dependencies]
+eframe = "0.33.0"
+regex = "1.12.2"
+rfd = "0.15.4"
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.145"
+arboard = "3.6.1"
+dirs = "6.0.0"
+zip = { version = "2.4.2", default-features = false, features = ["deflate"] }
+similar = "2.7.0"
+rusqlite = { version = "0.32.1", features = ["bundled"] }
+crossbeam-channel = "0.5.15"
+tungstenite = "0.24.0"
